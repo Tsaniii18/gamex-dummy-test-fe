@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import '../../styles.css';
 
 const Register = () => {
   const [username, setUsername] = useState('');
@@ -16,7 +17,7 @@ const Register = () => {
     setError('');
     
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError('PASSWORDS DO NOT MATCH');
       return;
     }
 
@@ -32,12 +33,13 @@ const Register = () => {
     <div className="columns is-centered mt-5">
       <div className="column is-half">
         <div className="box">
-          <h1 className="title has-text-centered">Register</h1>
+          <div className="pixel-character ghost register-character"></div>
+          <h1 className="title has-text-centered">REGISTER</h1>
           {error && <div className="notification is-danger">{error}</div>}
           
           <form onSubmit={handleSubmit}>
             <div className="field">
-              <label className="label">Username</label>
+              <label className="label">USERNAME</label>
               <div className="control">
                 <input
                   className="input"
@@ -50,7 +52,7 @@ const Register = () => {
             </div>
             
             <div className="field">
-              <label className="label">Email</label>
+              <label className="label">EMAIL</label>
               <div className="control">
                 <input
                   className="input"
@@ -63,7 +65,7 @@ const Register = () => {
             </div>
             
             <div className="field">
-              <label className="label">Password</label>
+              <label className="label">PASSWORD</label>
               <div className="control">
                 <input
                   className="input"
@@ -76,7 +78,7 @@ const Register = () => {
             </div>
             
             <div className="field">
-              <label className="label">Confirm Password</label>
+              <label className="label">CONFIRM PASSWORD</label>
               <div className="control">
                 <input
                   className="input"
@@ -91,14 +93,14 @@ const Register = () => {
             <div className="field">
               <div className="control">
                 <button className="button is-primary is-fullwidth" type="submit">
-                  Register
+                  REGISTER
                 </button>
               </div>
             </div>
           </form>
           
           <div className="has-text-centered mt-3">
-            Already have an account? <a href="/auth/login">Login</a>
+            ALREADY HAVE AN ACCOUNT? <a href="/auth/login">LOGIN</a>
           </div>
         </div>
       </div>

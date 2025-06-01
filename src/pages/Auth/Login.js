@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import '../../styles.css';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -25,12 +26,13 @@ const Login = () => {
     <div className="columns is-centered mt-5">
       <div className="column is-half">
         <div className="box">
-          <h1 className="title has-text-centered">Login</h1>
+          <div className="pixel-character pacman login-character"></div>
+          <h1 className="title has-text-centered">LOGIN</h1>
           {error && <div className="notification is-danger">{error}</div>}
           
           <form onSubmit={handleSubmit}>
             <div className="field">
-              <label className="label">Email</label>
+              <label className="label">EMAIL</label>
               <div className="control">
                 <input
                   className="input"
@@ -43,7 +45,7 @@ const Login = () => {
             </div>
             
             <div className="field">
-              <label className="label">Password</label>
+              <label className="label">PASSWORD</label>
               <div className="control">
                 <input
                   className="input"
@@ -58,7 +60,7 @@ const Login = () => {
             <div className="field">
               <div className="control">
                 <button className="button is-primary is-fullwidth" type="submit">
-                  Login
+                  LOGIN
                 </button>
               </div>
             </div>

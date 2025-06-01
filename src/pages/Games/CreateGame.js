@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createGame } from '../../api/games';
+import '../../styles.css'; // import css terpisah
 
 const CreateGame = () => {
   const [formData, setFormData] = useState({
@@ -19,7 +20,9 @@ const CreateGame = () => {
   };
 
   const handleFileChange = (e) => {
-    setGambarFile(e.target.files[0]);
+    if (e.target.files && e.target.files[0]) {
+      setGambarFile(e.target.files[0]);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -51,13 +54,13 @@ const CreateGame = () => {
   };
 
   return (
-    <div className="columns is-centered mt-5">
-      <div className="column is-half">
-        <div className="box">
-          <h1 className="title has-text-centered">Create New Game</h1>
+    <div className="creategame-container columns is-centered mt-5">
+      <div className="column is-full-mobile is-half-tablet is-one-third-desktop">
+        <div className="box creategame-box">
+          <h1 className="title has-text-centered mb-5">Create New Game</h1>
           {error && <div className="notification is-danger">{error}</div>}
           
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className="creategame-form">
             <div className="field">
               <label className="label">Game Image</label>
               <div className="control">
@@ -68,11 +71,11 @@ const CreateGame = () => {
                   onChange={handleFileChange}
                   accept="image/*"
                   required
+                  aria-label="Upload game image"
                 />
               </div>
             </div>
             
-            {/* Rest of the form fields remain the same */}
             <div className="field">
               <label className="label">Game Name</label>
               <div className="control">
@@ -83,11 +86,12 @@ const CreateGame = () => {
                   value={formData.nama}
                   onChange={handleChange}
                   required
+                  aria-label="Game name"
                 />
-              </div> 
+              </div>
             </div>
 
-             <div className="field">
+            <div className="field">
               <label className="label">Price</label>
               <div className="control">
                 <input
@@ -99,6 +103,7 @@ const CreateGame = () => {
                   step="0.01"
                   min="0"
                   required
+                  aria-label="Game price"
                 />
               </div>
             </div>
@@ -113,6 +118,7 @@ const CreateGame = () => {
                   value={formData.tag}
                   onChange={handleChange}
                   required
+                  aria-label="Game tags"
                 />
               </div>
             </div>
@@ -126,13 +132,14 @@ const CreateGame = () => {
                   value={formData.deskripsi}
                   onChange={handleChange}
                   required
+                  aria-label="Game description"
                 />
               </div>
             </div>
             
-            <div className="field">
+            <div className="field mt-4">
               <div className="control">
-                <button className="button is-primary is-fullwidth" type="submit">
+                <button className="button is-primary is-fullwidth" type="submit" aria-label="Create Game">
                   Create Game
                 </button>
               </div>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getMyGames } from '../../api/users';
 import { applyDiscount } from '../../api/games';
+import '../../styles.css'; // import styling khusus
 
 const MyGames = () => {
   const [games, setGames] = useState([]);
@@ -17,7 +18,6 @@ const MyGames = () => {
         const response = await getMyGames();
         setGames(response.data);
         
-        // Initialize discount inputs
         const inputs = {};
         response.data.forEach(game => {
           inputs[game.id] = game.discount || 0;
@@ -33,25 +33,15 @@ const MyGames = () => {
     fetchGames();
   }, []);
 
-const handleDiscountChange = (gameId, value) => {
-  // Allow numbers, empty string, or decimal point
-  if (value === '' || /^[0-9]*\.?[0-9]*$/.test(value)) {
-    const numValue = parseFloat(value) || 0;
-    setDiscountInputs(prev => ({
-      ...prev,
-      [gameId]: Math.min(100, Math.max(0, numValue))
-    }));
-  }
-};
-
-
-  // const handleDiscountChange = (gameId, value) => {
-  //   const numValue = parseInt(value) || 0;
-  //   setDiscountInputs(prev => ({
-  //     ...prev,
-  //     [gameId]: Math.min(100, Math.max(0, numValue))
-  //   }));
-  // };
+  const handleDiscountChange = (gameId, value) => {
+    if (value === '' || /^[0-9]*\.?[0-9]*$/.test(value)) {
+      const numValue = parseFloat(value) || 0;
+      setDiscountInputs(prev => ({
+        ...prev,
+        [gameId]: Math.min(100, Math.max(0, numValue))
+      }));
+    }
+  };
 
   const applyGameDiscount = async (gameId) => {
     setApplyingDiscount(gameId);
@@ -69,32 +59,12 @@ const handleDiscountChange = (gameId, value) => {
     }
   };
 
-//     try {
-//     // Ensure discount is a valid number between 0 and 100
-//     const discountValue = parseFloat(discountInputs[gameId]);
-//     if (isNaN(discountValue)) {
-//       throw new Error('Discount must be a number');
-//     }
-    
-//     const validDiscount = Math.min(100, Math.max(0, discountValue));
-    
-//     await applyDiscount(gameId, { discount: validDiscount });
-//     setGames(prev => prev.map(game => 
-//       game.id === gameId ? { ...game, discount: validDiscount } : game
-//     ));
-//   } catch (err) {
-//     setError(err.response?.data?.msg || err.message || 'Failed to apply discount');
-//   } finally {
-//     setApplyingDiscount(null);
-//   }
-// };
-
   if (loading) return <div className="has-text-centered mt-5">Loading...</div>;
-  if (error) return <div className="notification is-danger">{error}</div>;
+  if (error) return <div className="notification is-danger mx-4">{error}</div>;
 
   return (
-    <div className="container">
-      <div className="level">
+    <div className="container mygames-container">
+      <div className="level mygames-header">
         <div className="level-left">
           <h1 className="title">My Games</h1>
         </div>
@@ -119,20 +89,20 @@ const handleDiscountChange = (gameId, value) => {
         <div className="columns is-multiline">
           {games.map((game) => (
             <div className="column is-one-third" key={game.id}>
-              <div className="card">
+              <div className="card mygames-card">
                 <div className="card-image">
-                  <figure className="image is-4by3">
-                    <img src={game.gambar} alt={game.nama} />
+                  <figure className="image is-4by3 mygames-image-wrapper">
+                    <img src={game.gambar} alt={game.nama} className="mygames-image" />
                   </figure>
                 </div>
                 <div className="card-content">
                   <div className="media">
-                    <div className="media-content">
-                      <p className="title is-4">{game.nama}</p>
-                      <p className="subtitle is-6">{game.deskripsi}</p>
-                      <div className="tags">
+                    <div className="media-content has-text-centered">
+                      <p className="title is-4 mygames-title">{game.nama}</p>
+                      <p className="subtitle is-6 mygames-description">{game.deskripsi}</p>
+                      <div className="tags mygames-tags">
                         {game.tag.split(',').map((tag, index) => (
-                          <span key={index} className="tag is-info is-light">
+                          <span key={index} className="tag is-info is-light mygames-tag">
                             {tag.trim()}
                           </span>
                         ))}
@@ -140,26 +110,24 @@ const handleDiscountChange = (gameId, value) => {
                     </div>
                   </div>
                   
-                  <div className="content">
+                  <div className="content has-text-centered mygames-price">
                     <div className="is-size-5">${game.harga.toFixed(2)}</div>
                     {game.discount > 0 && (
-                      <span className="tag is-danger">
-                        {game.discount}% discount (${(game.harga * (1 - game.discount/100)).toFixed(2)})
+                      <span className="tag is-danger mygames-discount-tag">
+                        {game.discount}% discount (${(game.harga * (1 - game.discount / 100)).toFixed(2)})
                       </span>
                     )}
                   </div>
                   
-                  <div className="field has-addons">
+                  <div className="field has-addons mygames-discount-input-group">
                     <div className="control is-expanded">
                       <input
                         className="input"
-                        type="number"  // change to "text" or keep as "number" with step="any"
-                        step="any"     // add this to allow decimal values
-                        min="0"
-                        max="100"
+                        type="text"
                         value={discountInputs[game.id]}
                         onChange={(e) => handleDiscountChange(game.id, e.target.value)}
                         placeholder="Discount %"
+                        aria-label={`Discount input for ${game.nama}`}
                       />
                     </div>
                     <div className="control">
@@ -167,16 +135,18 @@ const handleDiscountChange = (gameId, value) => {
                         className={`button is-info ${applyingDiscount === game.id ? 'is-loading' : ''}`}
                         onClick={() => applyGameDiscount(game.id)}
                         disabled={applyingDiscount === game.id}
+                        aria-label={`Apply discount for ${game.nama}`}
                       >
                         Apply
                       </button>
                     </div>
                   </div>
                   
-                  <div className="buttons mt-3">
+                  <div className="buttons is-centered mt-3">
                     <Link 
                       to={`/games/${game.id}`} 
                       className="button is-primary is-small"
+                      aria-label={`View ${game.nama}`}
                     >
                       <span className="icon">
                         <i className="fas fa-eye"></i>
@@ -186,6 +156,7 @@ const handleDiscountChange = (gameId, value) => {
                     <Link 
                       to={`/games/${game.id}/edit`} 
                       className="button is-info is-small"
+                      aria-label={`Edit ${game.nama}`}
                     >
                       <span className="icon">
                         <i className="fas fa-edit"></i>

@@ -23,8 +23,8 @@ const Profile = () => {
         ...prev,
         username: authUser.username || '',
         email: authUser.email || '',
-        password: '', // Ensure password fields are empty
-        confirmPassword: '' // Ensure password fields are empty
+        password: '',
+        confirmPassword: ''
       }));
       if (authUser.foto_profil) {
         setFotoProfilPreview(authUser.foto_profil);
@@ -41,7 +41,6 @@ const Profile = () => {
     const file = e.target.files[0];
     if (file) {
       setFotoProfilFile(file);
-      // Create preview
       const reader = new FileReader();
       reader.onload = () => {
         setFotoProfilPreview(reader.result);
@@ -100,141 +99,132 @@ const Profile = () => {
   };
 
   return (
-    <div className="columns is-centered mt-5">
-      <div className="column is-half">
-        <div className="box">
-          <h1 className="title has-text-centered">Profile Settings</h1>
+    <div className="profile-wrapper">
+      <div className="profile-box pixel-border">
+        <h1 className="pixel-title has-text-centered">Profile Settings</h1>
 
-          {/* Profile picture preview and upload - Made larger */}
-          <div className="has-text-centered mb-4">
-            <figure className="image is-256x256 is-inline-block">
-              <img
-                src={fotoProfilPreview}
-                alt="Profile preview"
-                className="is-rounded"
-                style={{
-                  width: '256px',
-                  height: '256px',
-                  objectFit: 'cover'
-                }}
+        <div className="has-text-centered mt-4 mb-5">
+          <figure className="image is-128x128 is-inline-block pixel-avatar-frame">
+            <img
+              src={fotoProfilPreview}
+              alt="Profile preview"
+              className="is-rounded"
+              style={{
+                width: '128px',
+                height: '128px',
+                objectFit: 'cover',
+                border: '3px solid #000'
+              }}
+            />
+          </figure>
+          <div className="file is-centered mt-3">
+            <label className="file-label">
+              <input
+                className="file-input"
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
               />
-            </figure>
-            <div className="file is-centered mt-3">
-              <label className="file-label">
-                <input
-                  className="file-input"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                />
-                <span className="file-cta">
-                  <span className="file-icon">
-                    <i className="fas fa-upload"></i>
-                  </span>
-                  <span className="file-label">
-                    {fotoProfilFile ? 'Change Photo' : 'Upload Photo'}
-                  </span>
+              <span className="file-cta pixel-button">
+                <span className="file-label">
+                  {fotoProfilFile ? 'Change Photo' : 'Upload Photo'}
                 </span>
-              </label>
-            </div>
+              </span>
+            </label>
           </div>
+        </div>
 
-          {message && (
-            <div className="notification is-success">
-              <button className="delete" onClick={() => setMessage('')}></button>
-              {message}
-            </div>
-          )}
+        {message && (
+          <div className="notification is-success pixel-notification">
+            <button className="delete" onClick={() => setMessage('')}></button>
+            {message}
+          </div>
+        )}
 
-          {error && (
-            <div className="notification is-danger">
-              <button className="delete" onClick={() => setError('')}></button>
-              {error}
-            </div>
-          )}
+        {error && (
+          <div className="notification is-danger pixel-notification">
+            <button className="delete" onClick={() => setError('')}></button>
+            {error}
+          </div>
+        )}
 
-          <form onSubmit={handleSubmit}>
-            <div className="field">
-              <label className="label">Username</label>
-              <div className="control">
-                <input
-                  className="input"
-                  type="text"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="field">
-              <label className="label">Email</label>
-              <div className="control">
-                <input
-                  className="input"
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="field">
-              <label className="label">New Password (leave blank to keep current)</label>
-              <div className="control">
-                <input
-                  className="input"
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  minLength="6"
-                  placeholder="Enter new password"
-                />
-              </div>
-            </div>
-
-            <div className="field">
-              <label className="label">Confirm Password</label>
-              <div className="control">
-                <input
-                  className="input"
-                  type="password"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  minLength="6"
-                  placeholder="Confirm new password"
-                />
-              </div>
-            </div>
-
-            <div className="field">
-              <div className="control">
-                <button
-                  className="button is-primary is-fullwidth"
-                  type="submit"
-                  disabled={!formData.username || !formData.email}
-                >
-                  Update Profile
-                </button>
-              </div>
-            </div>
-          </form>
-
-          <div className="field mt-5">
+        <form onSubmit={handleSubmit} className="pixel-form">
+          <div className="field mb-4">
+            <label className="label pixel-label">Username</label>
             <div className="control">
-              <button
-                className="button is-danger is-fullwidth"
-                onClick={handleDeleteAccount}
-              >
-                Delete My Account
-              </button>
+              <input
+                className="input pixel-input"
+                type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                required
+              />
             </div>
           </div>
+
+          <div className="field mb-4">
+            <label className="label pixel-label">Email</label>
+            <div className="control">
+              <input
+                className="input pixel-input"
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="field mb-4">
+            <label className="label pixel-label">New Password</label>
+            <div className="control">
+              <input
+                className="input pixel-input"
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Leave blank to keep current"
+                minLength="6"
+              />
+            </div>
+          </div>
+
+          <div className="field mb-5">
+            <label className="label pixel-label">Confirm Password</label>
+            <div className="control">
+              <input
+                className="input pixel-input"
+                type="password"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                minLength="6"
+                placeholder="Confirm new password"
+              />
+            </div>
+          </div>
+
+          <div className="field mb-4">
+            <button
+              className="button is-primary is-fullwidth pixel-button"
+              type="submit"
+              disabled={!formData.username || !formData.email}
+            >
+              Update Profile
+            </button>
+          </div>
+        </form>
+
+        <div className="field mt-5">
+          <button
+            className="button is-danger is-fullwidth pixel-button"
+            onClick={handleDeleteAccount}
+          >
+            Delete My Account
+          </button>
         </div>
       </div>
     </div>

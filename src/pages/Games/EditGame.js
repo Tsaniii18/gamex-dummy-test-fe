@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getGameDetail, updateGame } from '../../api/games';
+import '../../styles.css'; // import css terpisah
 
 const EditGame = () => {
   const { id } = useParams();
@@ -45,7 +46,7 @@ const EditGame = () => {
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       setGambarFile(e.target.files[0]);
-      // Preview the new image
+      // Preview image baru
       const reader = new FileReader();
       reader.onload = (event) => {
         setCurrentImage(event.target.result);
@@ -60,20 +61,14 @@ const EditGame = () => {
     
     try {
       const numericPrice = parseFloat(formData.harga);
-      if (isNaN(numericPrice)) {
-        throw new Error('Price must be a number');
-      }
+      if (isNaN(numericPrice)) throw new Error('Price must be a number');
 
       const formDataToSend = new FormData();
       formDataToSend.append('nama', formData.nama);
       formDataToSend.append('harga', numericPrice);
       formDataToSend.append('tag', formData.tag);
       formDataToSend.append('deskripsi', formData.deskripsi);
-      
-      // Only append the file if a new one was selected
-      if (gambarFile) {
-        formDataToSend.append('gambar', gambarFile);
-      }
+      if (gambarFile) formDataToSend.append('gambar', gambarFile);
 
       await updateGame(id, formDataToSend);
       navigate(`/games/${id}`);
@@ -83,20 +78,20 @@ const EditGame = () => {
   };
 
   if (loading) return <div className="has-text-centered mt-5">Loading...</div>;
-  if (error) return <div className="notification is-danger">{error}</div>;
+  if (error && loading === false) return <div className="notification is-danger mt-5 mx-4">{error}</div>;
 
   return (
-    <div className="columns is-centered mt-5">
-      <div className="column is-half">
-        <div className="box">
-          <h1 className="title has-text-centered">Edit Game</h1>
+    <div className="editgame-container columns is-centered mt-5">
+      <div className="column is-full-mobile is-half-tablet is-one-third-desktop">
+        <div className="box editgame-box">
+          <h1 className="title has-text-centered mb-5">Edit Game</h1>
           
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className="editgame-form">
             <div className="field">
               <label className="label">Game Image</label>
               {currentImage && (
-                <figure className="image is-128x128 mb-3">
-                  <img src={currentImage} alt="Current game" />
+                <figure className="image is-128x128 mb-3 editgame-image-wrapper">
+                  <img src={currentImage} alt="Current game" className="editgame-image"/>
                 </figure>
               )}
               <div className="control">
@@ -106,6 +101,7 @@ const EditGame = () => {
                   name="gambar"
                   onChange={handleFileChange}
                   accept="image/*"
+                  aria-label="Upload new game image"
                 />
                 <p className="help">Leave empty to keep current image</p>
               </div>
@@ -121,6 +117,7 @@ const EditGame = () => {
                   value={formData.nama}
                   onChange={handleChange}
                   required
+                  aria-label="Game name"
                 />
               </div>
             </div>
@@ -137,6 +134,7 @@ const EditGame = () => {
                   step="0.01"
                   min="0"
                   required
+                  aria-label="Game price"
                 />
               </div>
             </div>
@@ -151,6 +149,7 @@ const EditGame = () => {
                   value={formData.tag}
                   onChange={handleChange}
                   required
+                  aria-label="Game tags"
                 />
               </div>
             </div>
@@ -164,13 +163,14 @@ const EditGame = () => {
                   value={formData.deskripsi}
                   onChange={handleChange}
                   required
+                  aria-label="Game description"
                 />
               </div>
             </div>
             
-            <div className="field">
+            <div className="field mt-4">
               <div className="control">
-                <button className="button is-primary is-fullwidth" type="submit">
+                <button className="button is-primary is-fullwidth" type="submit" aria-label="Update Game">
                   Update Game
                 </button>
               </div>

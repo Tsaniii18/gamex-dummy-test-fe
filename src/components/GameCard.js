@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { FaUser } from 'react-icons/fa';
+import '../styles.css';
 
 const GameCard = ({ game }) => {
   const { user } = useAuth();
@@ -8,69 +9,47 @@ const GameCard = ({ game }) => {
   const discountedPrice = game.harga * (1 - (game.discount || 0) / 100);
 
   return (
-    <div className="card" style={{ boxShadow: '0 4px 8px rgba(0,0,0,0.1)', borderRadius: '8px' }}>
-      <div className="card-image">
-        <figure className="image is-4by3" style={{ borderTopLeftRadius: '8px', borderTopRightRadius: '8px', overflow: 'hidden' }}>
-          <img src={game.gambar} alt={game.nama} />
-        </figure>
+    <div className="pixel-card">
+      <div className="pixel-card-image">
+        <img src={game.gambar} alt={game.nama} />
       </div>
-      <div className="card-content">
-        <div className="media" style={{ marginBottom: '0.5rem' }}>
-          <div className="media-content">
-            <p className="title is-4" style={{ marginBottom: '0.2rem' }}>{game.nama}</p>
-            <p className="subtitle is-6 has-text-grey-dark" style={{ fontStyle: 'italic', marginBottom: '0.5rem' }}>
-              <FaUser style={{ marginRight: '6px' }} />
-              @{game.User?.username || 'unknown'}
-            </p>
 
-           <p className="subtitle is-6" style={{ 
-              display: '-webkit-box',
-              WebkitLineClamp: 3, 
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis'
-            }}>
-              {game.deskripsi}
-            </p>
-            <div className="subtitle is-7 has-text-grey" style={{ marginTop: '0.5rem' }}>
-              <strong>Tags:</strong>{' '}
-              {game.tag?.split(',').map((t, index) => (
-                <span key={index} className="tag is-light is-info mr-1">
-                  {t.trim()}
-                </span>
-              ))}
-            </div>
+      <div className="pixel-card-content">
+        <h2 className="pixel-game-title">{game.nama}</h2>
 
-          </div>
+        <p className="pixel-uploader">
+          <FaUser className="pixel-icon" /> @{game.User?.username || 'unknown'}
+        </p>
+
+        <p className="pixel-description">{game.deskripsi}</p>
+
+        <div className="pixel-tags">
+          <strong>Tags:</strong>{' '}
+          {game.tag?.split(',').map((t, index) => (
+            <span key={index} className="pixel-tag">
+              {t.trim()}
+            </span>
+          ))}
         </div>
 
-        <div className="content" style={{ marginBottom: '1rem' }}>
+        <div className="pixel-price">
           {game.discount > 0 ? (
-            <div>
-              <span className="has-text-danger has-text-weight-bold" style={{ fontSize: '1.2rem' }}>
-                ${discountedPrice.toFixed(2)}
-              </span>
-              <span
-                className="has-text-grey-light ml-2"
-                style={{ textDecoration: 'line-through', fontSize: '1rem' }}
-              >
-                ${game.harga.toFixed(2)}
-              </span>
-              <span className="tag is-danger ml-2" style={{ fontWeight: '600' }}>
-                {game.discount}% OFF
-              </span>
-            </div>
+            <>
+              <span className="pixel-discounted-price">${discountedPrice.toFixed(2)}</span>
+              <span className="pixel-original-price">${game.harga.toFixed(2)}</span>
+              <span className="pixel-discount-tag">{game.discount}% OFF</span>
+            </>
           ) : (
-            <div style={{ fontSize: '1.2rem', fontWeight: '600' }}>${game.harga.toFixed(2)}</div>
+            <span className="pixel-normal-price">${game.harga.toFixed(2)}</span>
           )}
         </div>
 
-        <div className="buttons">
-          <Link to={`/games/${game.id}`} className="button is-primary is-small">
+        <div className="pixel-buttons">
+          <Link to={`/games/${game.id}`} className="pixel-button">
             Details
           </Link>
           {isOwner && (
-            <Link to={`/games/my-games`} className="button is-info is-small">
+            <Link to={`/games/my-games`} className="pixel-button pixel-button-alt">
               Manage
             </Link>
           )}

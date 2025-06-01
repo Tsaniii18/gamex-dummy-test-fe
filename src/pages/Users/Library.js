@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getLibrary, updateGameStatus, deleteFromLibrary } from '../../api/users';
+import '../../styles.css'; // import css terpisah
 
 const Library = () => {
   const [library, setLibrary] = useState([]);
@@ -54,18 +55,18 @@ const Library = () => {
   if (error) return <div className="notification is-danger">{error}</div>;
 
   return (
-    <div className="container">
-      <h1 className="title">My Library</h1>
+    <div className="library-container container">
+      <h1 className="title has-text-centered mb-5">My Library</h1>
 
       {library.length === 0 ? (
-        <div className="notification is-info">
+        <div className="notification is-info has-text-centered">
           Your library is empty. <Link to="/games">Browse games</Link> to add some!
         </div>
       ) : (
-        <div className="columns is-multiline">
+        <div className="columns is-multiline library-columns">
           {library.map((item) => (
-            <div className="column is-one-third" key={item.id}>
-              <div className="card">
+            <div className="column is-full-mobile is-half-tablet is-one-third-desktop" key={item.id}>
+              <div className="card library-card">
                 <div className="card-image">
                   <figure className="image is-4by3">
                     <img src={item.Game.gambar} alt={item.Game.nama} />
@@ -74,8 +75,8 @@ const Library = () => {
                 <div className="card-content">
                   <div className="media">
                     <div className="media-content">
-                      <p className="title is-4">{item.Game.nama}</p>
-                      <p className="subtitle is-6">{item.Game.deskripsi}</p>
+                      <p className="title is-5">{item.Game.nama}</p>
+                      <p className="subtitle is-7 library-description">{item.Game.deskripsi}</p>
                     </div>
                   </div>
 
@@ -91,24 +92,23 @@ const Library = () => {
                         {item.status === 'terinstall' ? 'Uninstall' : 'Install'}
                       </button>
                     </div>
-                    <p className="help">
+                    <p className="help is-size-7">
                       Last updated: {new Date(item.updatedAt).toLocaleString()}
                     </p>
                   </div>
 
-
-                  <div className="buttons mt-3">
+                  <div className="buttons mt-3 is-justify-content-space-between">
                     <button
                       className="button is-danger is-small"
                       onClick={() => handleDelete(item.game_id)}
                     >
-                      Remove from Library
+                      Remove
                     </button>
                     <Link
                       to={`/games/${item.game_id}`}
                       className="button is-info is-small"
                     >
-                      View Details
+                      Details
                     </Link>
                   </div>
                 </div>

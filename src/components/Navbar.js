@@ -1,83 +1,72 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { 
-  FaGamepad, 
-  FaThList, 
-  FaBookOpen, 
-  FaHistory, 
-  FaUserCircle, 
-  FaSignOutAlt, 
-  FaSignInAlt, 
-  FaUserPlus, 
-  FaHome 
+import {
+  FaGamepad,
+  FaThList,
+  FaBookOpen,
+  FaHistory,
+  FaUserCircle,
+  FaSignOutAlt,
+  FaSignInAlt,
+  FaUserPlus
 } from 'react-icons/fa';
+import '../styles.css';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
 
   return (
-    <nav className="navbar is-primary" role="navigation" aria-label="main navigation" style={{ boxShadow: '0 2px 5px rgba(0,0,0,0.15)' }}>
-      <div className="container">
-        <div className="navbar-brand">
-          <Link className="navbar-item is-flex is-align-items-center" to="/" style={{ fontWeight: 'bold', fontSize: '1.5rem', color: 'white' }}>
-            <FaGamepad style={{ marginRight: '8px' }} />
-            Game-Ex
-          </Link>
+    <nav className="pixel-navbar">
+      <div className="pixel-navbar-container">
+        <Link to="/" className="pixel-navbar-brand">
+          <FaGamepad className="navbar-icon" />
+          Game-Ex
+        </Link>
 
-          {/* Hamburger menu for mobile */}
-          <a role="button" className="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasic">
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-          </a>
-        </div>
-
-        <div id="navbarBasic" className="navbar-menu">
-          <div className="navbar-start">
-            <Link className="navbar-item is-flex is-align-items-center" to="/games">
-              <FaThList style={{ marginRight: '6px' }} />
+        <div className="pixel-navbar-menu">
+          <div className="pixel-navbar-start">
+            <Link to="/games" className="pixel-navbar-item">
+              <FaThList className="navbar-icon" />
               Games
             </Link>
             {user && (
               <>
-                <Link className="navbar-item is-flex is-align-items-center" to="/games/my-games">
-                  <FaGamepad style={{ marginRight: '6px' }} />
+                <Link to="/games/my-games" className="pixel-navbar-item">
+                  <FaGamepad className="navbar-icon" />
                   My Games
                 </Link>
-                <Link className="navbar-item is-flex is-align-items-center" to="/library">
-                  <FaBookOpen style={{ marginRight: '6px' }} />
+                <Link to="/library" className="pixel-navbar-item">
+                  <FaBookOpen className="navbar-icon" />
                   Library
                 </Link>
-                <Link className="navbar-item is-flex is-align-items-center" to="/history">
-                  <FaHistory style={{ marginRight: '6px' }} />
+                <Link to="/history" className="pixel-navbar-item">
+                  <FaHistory className="navbar-icon" />
                   Purchase History
                 </Link>
               </>
             )}
           </div>
 
-          <div className="navbar-end">
+          <div className="pixel-navbar-end">
             {user ? (
               <>
-                <Link className="navbar-item is-flex is-align-items-center" to="/profile">
-                  <FaUserCircle style={{ marginRight: '6px' }} />
+                <Link to="/profile" className="pixel-navbar-item">
+                  <FaUserCircle className="navbar-icon" />
                   Profile
                 </Link>
-                <div className="navbar-item">
-                  <button className="button is-light is-flex is-align-items-center" onClick={logout}>
-                    <FaSignOutAlt style={{ marginRight: '6px' }} />
-                    Logout
-                  </button>
-                </div>
+                <button className="pixel-button logout-button" onClick={logout}>
+                  <FaSignOutAlt className="navbar-icon" />
+                  Logout
+                </button>
               </>
             ) : (
               <>
-                <Link className="navbar-item is-flex is-align-items-center" to="/auth/login">
-                  <FaSignInAlt style={{ marginRight: '6px' }} />
+                <Link to="/auth/login" className="pixel-navbar-item">
+                  <FaSignInAlt className="navbar-icon" />
                   Login
                 </Link>
-                <Link className="navbar-item is-flex is-align-items-center" to="/auth/register">
-                  <FaUserPlus style={{ marginRight: '6px' }} />
+                <Link to="/auth/register" className="pixel-navbar-item">
+                  <FaUserPlus className="navbar-icon" />
                   Register
                 </Link>
               </>

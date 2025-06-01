@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getPurchaseHistory } from '../../api/users';
+import '../../styles.css';
 
 const PurchaseHistory = () => {
   const [history, setHistory] = useState([]);
@@ -25,21 +26,21 @@ const PurchaseHistory = () => {
   if (error) return <div className="notification is-danger">{error}</div>;
 
   return (
-    <div className="container mt-5">
-      <h1 className="title mb-4">Purchase History</h1>
+    <div className="container purchase-history-container mt-5">
+      <h1 className="title has-text-centered mb-4">Purchase History</h1>
 
       {history.length === 0 ? (
         <div className="notification is-info has-text-centered">
           You haven't made any purchases yet.
         </div>
       ) : (
-        <div className="card">
+        <div className="card purchase-history-card">
           <header className="card-header">
             <p className="card-header-title">Your Transactions</p>
           </header>
           <div className="card-content">
-            <div className="table-container">
-              <table className="table is-fullwidth is-striped is-hoverable is-bordered">
+            <div className="table-wrapper">
+              <table className="table purchase-history-table is-fullwidth is-hoverable">
                 <thead>
                   <tr>
                     <th>Game</th>
@@ -54,13 +55,9 @@ const PurchaseHistory = () => {
                   {history.map((transaction) => (
                     <tr key={transaction.id}>
                       <td>{transaction.Game.nama}</td>
-                      <td className="has-text-right">
-                        ${transaction.harga_awal.toFixed(2)}
-                      </td>
+                      <td className="has-text-right">${transaction.harga_awal.toFixed(2)}</td>
                       <td className="has-text-centered">{transaction.discount}%</td>
-                      <td className="has-text-right">
-                        ${transaction.harga_discount.toFixed(2)}
-                      </td>
+                      <td className="has-text-right">${transaction.harga_discount.toFixed(2)}</td>
                       <td className="has-text-centered">{transaction.metode_pembayaran || 'N/A'}</td>
                       <td className="has-text-centered">
                         {new Date(transaction.createdAt).toLocaleDateString(undefined, {

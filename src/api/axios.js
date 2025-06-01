@@ -1,44 +1,46 @@
 import axios from 'axios';
-import { refreshToken } from './auth';
+import { jwtDecode } from "jwt-decode";
 
 const api = axios.create({
   baseURL: 'http://localhost:5000',
   withCredentials: true,
 });
 
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+api.interceptors.request.use(async (config) => {
+  if (
+    config.url.includes('/login') ||
+    config.url.includes('/register') ||
+    config.url.includes('/auth/refresh') ||
+    config.url.includes('/games') 
+  ) {
     return config;
-  },
-  (error) => Promise.reject(error)
-);
+  }
 
-api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-    
-    if (error.response.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      
+  let accessToken = localStorage.getItem('accessToken');
+  if (accessToken) {
+    const decoded = jwtDecode(accessToken);
+    const isExpired = decoded.exp * 1000 < Date.now();
+
+    if (isExpired) {
       try {
-        const newToken = await refreshToken();
-        localStorage.setItem('accessToken', newToken);
-        return api(originalRequest);
-      } catch (refreshError) {
-        console.error('Refresh token failed:', refreshError);
+        const response = await api.post('/auth/refresh');
+        const newAccessToken = response.data.accessToken;
+        localStorage.setItem('accessToken', newAccessToken);
+        config.headers.Authorization = `Bearer ${newAccessToken}`;
+      } catch (error) {
         localStorage.removeItem('accessToken');
         window.location.href = '/auth/login';
-        return Promise.reject(refreshError);
+        return Promise.reject(error);
       }
+    } else {
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
-    
-    return Promise.reject(error);
+  } else {
+    window.location.href = '/auth/login';
+    return Promise.reject(new Error('No access token'));
   }
-);
+
+  return config;
+}, (error) => Promise.reject(error));
 
 export default api;

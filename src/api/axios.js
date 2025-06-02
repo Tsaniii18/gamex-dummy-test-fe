@@ -6,39 +6,15 @@ const api = axios.create({
   withCredentials: true,
 });
 
-const protectedRoutes = [
-  '/games',
-  '/library',
-  '/transactions',
-  '/auth/user',
-  '/auth/logout',
-  // tambahkan endpoint lain yang butuh token
-];
-
 api.interceptors.request.use(async (config) => {
-  const method = config.method?.toUpperCase();
-  const url = config.url;
-
-  // Abaikan auth check jika endpoint adalah login/register/refresh
   if (
-    url.includes('/auth/login') ||
-    url.includes('/auth/register') ||
-    url.includes('/auth/refresh')
+    config.url.includes('/login') ||
+    config.url.includes('/register') ||
+    config.url.includes('/auth/refresh')
   ) {
     return config;
   }
 
-  // Tentukan apakah route perlu otorisasi
-  const isProtected = protectedRoutes.some(route =>
-    url.startsWith(route) && method !== 'GET'
-  );
-
-  // Jika tidak perlu otorisasi, lanjut tanpa token
-  if (!isProtected) {
-    return config;
-  }
-
-  // Handle token
   let accessToken = localStorage.getItem('accessToken');
   if (accessToken) {
     const decoded = jwtDecode(accessToken);
@@ -49,14 +25,14 @@ api.interceptors.request.use(async (config) => {
         const response = await api.post('/auth/refresh');
         const newAccessToken = response.data.accessToken;
         localStorage.setItem('accessToken', newAccessToken);
-        config.headers.Authorization = `Bearer ${newAccessToken}`;
+        config.headers.Authorization = Bearer ${newAccessToken};
       } catch (error) {
         localStorage.removeItem('accessToken');
         window.location.href = '/auth/login';
         return Promise.reject(error);
       }
     } else {
-      config.headers.Authorization = `Bearer ${accessToken}`;
+      config.headers.Authorization = Bearer ${accessToken};
     }
   } else {
     window.location.href = '/auth/login';

@@ -7,15 +7,23 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(async (config) => {
-  if (
-    config.url.includes('/login') ||
-    config.url.includes('/register') ||
-    config.url.includes('/auth/refresh')
-  ) {
-    return config;
-  }
+  const publicPaths = [
+    '/games',
+    /^\/games\/\d+$/, // regex: /games/:id
+    '/auth/login',
+    '/auth/register',
+    '/auth/refresh'
+  ];
+
+  const isPublic = publicPaths.some(path => {
+    if (typeof path === 'string') return config.url.startsWith(path);
+    if (path instanceof RegExp) return path.test(config.url);
+    return false;
+  });
 
   let accessToken = localStorage.getItem('accessToken');
+
+  // Jika token ada, selalu gunakan (baik untuk endpoint publik maupun private)
   if (accessToken) {
     const decoded = jwtDecode(accessToken);
     const isExpired = decoded.exp * 1000 < Date.now();
@@ -28,15 +36,20 @@ api.interceptors.request.use(async (config) => {
         config.headers.Authorization = `Bearer ${newAccessToken}`;
       } catch (error) {
         localStorage.removeItem('accessToken');
-        window.location.href = '/auth/login';
-        return Promise.reject(error);
+        if (!isPublic) {
+          window.location.href = '/auth/login';
+          return Promise.reject(error);
+        }
       }
     } else {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
   } else {
-    window.location.href = '/auth/login';
-    return Promise.reject(new Error('No access token'));
+    // Jika tidak ada token, hanya izinkan endpoint publik (GET)
+    if (!isPublic || config.method !== 'get') {
+      window.location.href = '/auth/login';
+      return Promise.reject(new Error('No access token'));
+    }
   }
 
   return config;

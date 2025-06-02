@@ -7,27 +7,38 @@ const api = axios.create({
 });
 
 const protectedRoutes = [
-  '/games', // POST, PUT, PATCH, DELETE (bukan GET)
-  '/auth/user',
+  '/games',
   '/library',
   '/transactions',
+  '/auth/user',
   '/auth/logout',
   // tambahkan endpoint lain yang butuh token
 ];
 
 api.interceptors.request.use(async (config) => {
-  const method = config.method.toUpperCase();
+  const method = config.method?.toUpperCase();
   const url = config.url;
 
-  // Hanya lakukan token check jika endpoint termasuk protected
+  // Abaikan auth check jika endpoint adalah login/register/refresh
+  if (
+    url.includes('/auth/login') ||
+    url.includes('/auth/register') ||
+    url.includes('/auth/refresh')
+  ) {
+    return config;
+  }
+
+  // Tentukan apakah route perlu otorisasi
   const isProtected = protectedRoutes.some(route =>
     url.startsWith(route) && method !== 'GET'
   );
 
+  // Jika tidak perlu otorisasi, lanjut tanpa token
   if (!isProtected) {
-    return config; // skip auth check
+    return config;
   }
 
+  // Handle token
   let accessToken = localStorage.getItem('accessToken');
   if (accessToken) {
     const decoded = jwtDecode(accessToken);

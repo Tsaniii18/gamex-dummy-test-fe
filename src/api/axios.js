@@ -9,7 +9,7 @@ const api = axios.create({
 api.interceptors.request.use(async (config) => {
   const publicPaths = [
     '/games',
-    /^\/games\/\d+$/, // regex: /games/:id
+    /^\/games\/\d+$/, // regex untuk game detail
     '/auth/login',
     '/auth/register',
     '/auth/refresh'
@@ -21,38 +21,36 @@ api.interceptors.request.use(async (config) => {
     return false;
   });
 
-  let accessToken = localStorage.getItem('accessToken');
+  const accessToken = localStorage.getItem('accessToken');
 
-  // Jika token ada, selalu gunakan (baik untuk endpoint publik maupun private)
   if (accessToken) {
-    const decoded = jwtDecode(accessToken);
-    const isExpired = decoded.exp * 1000 < Date.now();
+    try {
+      const decoded = jwtDecode(accessToken);
+      const isExpired = decoded.exp * 1000 < Date.now();
 
-    if (isExpired) {
-      try {
+      if (isExpired) {
+        // Refresh token
         const response = await api.post('/auth/refresh');
         const newAccessToken = response.data.accessToken;
         localStorage.setItem('accessToken', newAccessToken);
         config.headers.Authorization = `Bearer ${newAccessToken}`;
-      } catch (error) {
-        localStorage.removeItem('accessToken');
-        if (!isPublic) {
-          window.location.href = '/auth/login';
-          return Promise.reject(error);
-        }
+      } else {
+        config.headers.Authorization = `Bearer ${accessToken}`;
       }
-    } else {
-      config.headers.Authorization = `Bearer ${accessToken}`;
+
+    } catch (err) {
+      // Jika refresh gagal, lempar error biar ditangani di komponen
+      return Promise.reject(err);
     }
   } else {
-    // Jika tidak ada token, hanya izinkan endpoint publik (GET)
+    // Tidak ada token dan bukan endpoint publik → tolak
     if (!isPublic || config.method !== 'get') {
-      window.location.href = '/auth/login';
-      return Promise.reject(new Error('No access token'));
+      return Promise.reject(new Error('Unauthorized: no access token'));
     }
   }
 
   return config;
 }, (error) => Promise.reject(error));
+
 
 export default api;

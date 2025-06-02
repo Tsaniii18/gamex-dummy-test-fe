@@ -25,14 +25,14 @@ api.interceptors.request.use(async (config) => {
         const response = await api.post('/auth/refresh');
         const newAccessToken = response.data.accessToken;
         localStorage.setItem('accessToken', newAccessToken);
-        config.headers.Authorization = Bearer ${newAccessToken};
+        config.headers.Authorization = `Bearer ${newAccessToken}`;
       } catch (error) {
         localStorage.removeItem('accessToken');
         window.location.href = '/auth/login';
         return Promise.reject(error);
       }
     } else {
-      config.headers.Authorization = Bearer ${accessToken};
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
   } else {
     window.location.href = '/auth/login';

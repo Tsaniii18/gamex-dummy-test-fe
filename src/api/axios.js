@@ -6,50 +6,53 @@ const api = axios.create({
   withCredentials: true,
 });
 
+const protectedRoutes = [
+  '/games', // POST, PUT, PATCH, DELETE (bukan GET)
+  '/auth/user',
+  '/library',
+  '/transactions',
+  '/auth/logout',
+  // tambahkan endpoint lain yang butuh token
+];
+
 api.interceptors.request.use(async (config) => {
-  const publicPaths = [
-    '/games',
-    '/auth/login',
-    '/auth/register',
-    '/auth/refresh'
-  ];
+  const method = config.method.toUpperCase();
+  const url = config.url;
 
-  const isPublic = publicPaths.some(path => {
-    if (typeof path === 'string') return config.url.startsWith(path);
-    if (path instanceof RegExp) return path.test(config.url);
-    return false;
-  });
+  // Hanya lakukan token check jika endpoint termasuk protected
+  const isProtected = protectedRoutes.some(route =>
+    url.startsWith(route) && method !== 'GET'
+  );
 
-  const accessToken = localStorage.getItem('accessToken');
+  if (!isProtected) {
+    return config; // skip auth check
+  }
 
+  let accessToken = localStorage.getItem('accessToken');
   if (accessToken) {
-    try {
-      const decoded = jwtDecode(accessToken);
-      const isExpired = decoded.exp * 1000 < Date.now();
+    const decoded = jwtDecode(accessToken);
+    const isExpired = decoded.exp * 1000 < Date.now();
 
-      if (isExpired) {
-        // Refresh token
+    if (isExpired) {
+      try {
         const response = await api.post('/auth/refresh');
         const newAccessToken = response.data.accessToken;
         localStorage.setItem('accessToken', newAccessToken);
         config.headers.Authorization = `Bearer ${newAccessToken}`;
-      } else {
-        config.headers.Authorization = `Bearer ${accessToken}`;
+      } catch (error) {
+        localStorage.removeItem('accessToken');
+        window.location.href = '/auth/login';
+        return Promise.reject(error);
       }
-
-    } catch (err) {
-      // Jika refresh gagal, lempar error biar ditangani di komponen
-      return Promise.reject(err);
+    } else {
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
   } else {
-    // Tidak ada token dan bukan endpoint publik → tolak
-    if (!isPublic || config.method !== 'get') {
-      return Promise.reject(new Error('Unauthorized: no access token'));
-    }
+    window.location.href = '/auth/login';
+    return Promise.reject(new Error('No access token'));
   }
 
   return config;
 }, (error) => Promise.reject(error));
-
 
 export default api;

@@ -7,21 +7,11 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(async (config) => {
-  const publicEndpoints = [
-    { method: 'get', url: '/games' },
-    { method: 'post', url: '/login' },
-    { method: 'post', url: '/register' },
-    { method: 'post', url: '/auth/refresh' },
-  ];
-
-  // Check if the request matches any public endpoint
-  const isPublic = publicEndpoints.some(
-    (endpoint) =>
-      config.method === endpoint.method &&
-      config.url.startsWith(endpoint.url)
-  );
-
-  if (isPublic) {
+  if (
+    config.url.includes('/login') ||
+    config.url.includes('/register') ||
+    config.url.includes('/auth/refresh')
+  ) {
     return config;
   }
 

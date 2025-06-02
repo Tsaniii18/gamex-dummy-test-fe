@@ -9,7 +9,6 @@ const api = axios.create({
 api.interceptors.request.use(async (config) => {
   const publicPaths = [
     '/games',
-    /^\/games\/\d+$/, // regex untuk game detail
     '/auth/login',
     '/auth/register',
     '/auth/refresh'

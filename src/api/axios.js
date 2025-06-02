@@ -10,8 +10,7 @@ api.interceptors.request.use(async (config) => {
   if (
     config.url.includes('/login') ||
     config.url.includes('/register') ||
-    config.url.includes('/auth/refresh') ||
-    config.url.includes('/games') 
+    config.url.includes('/auth/refresh')
   ) {
     return config;
   }

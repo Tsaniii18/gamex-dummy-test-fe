@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await refreshToken(); 
+        const response = await refreshToken(); // request ke /auth/refresh
         const accessToken = response.data.accessToken;
         localStorage.setItem('accessToken', accessToken);
         const decoded = jwtDecode(accessToken);
